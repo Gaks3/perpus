@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextIndex", "fullTextSearch", "relationJoins"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id  String  @id @default(uuid())
+  username  String  
+  email String  @unique
+  hashed_password  String
+  isAdmin Boolean
+  countBorrow Int @default(0)
+
+  sessions Session[]
+  borrows Borrow[]
+  bookmarks Bookmark[]
+
+  @@map("user")
+}
+
+model Session {
+  id  String  @id
+  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  expiresAt DateTime
+
+  @@map("session")
+}
+
+model Book {
+  id  Int @id @default(autoincrement())
+  title String @db.VarChar(500)
+  author  String
+  publisher String
+  ISBN  String
+  language  String
+  page Int
+  year_published  DateTime
+  target_reader String
+  description String  @db.Text
+  image_url String
+  status Status @default(available)
+
+  borrows Borrow[]
+  bookmarks  Bookmark[]
+
+  @@map("book")
+}
+
+enum Status {
+  borrowed
+  available
+}
+
+model Borrow {
+  id  Int @id @default(autoincrement())
+  book  Book  @relation(fields: [bookId], references: [id])
+  bookId  Int
+  user  User  @relation(fields: [userId], references: [id])
+  userId  String
+  returnDate  DateTime
+
+  @@map("borrow")
+  @@unique([bookId, userId])
+}
+
+model Bookmark {
+  id  Int @id @default(autoincrement())
+  user  User  @relation(fields: [userId], references: [id])
+  userId  String
+  book  Book  @relation(fields: [bookId], references: [id])
+  bookId  Int
+
+  @@unique([bookId, userId])
+}
