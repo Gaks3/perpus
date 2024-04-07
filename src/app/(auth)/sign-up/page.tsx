@@ -1,7 +1,6 @@
 import SignUp from '@/components/SignUp'
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
