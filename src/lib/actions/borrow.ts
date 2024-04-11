@@ -64,3 +64,18 @@ export async function deleteBorrow(id: number) {
 
   return res
 }
+
+export async function extendTimeBorrow(id: number) {
+  const res = await prisma.borrow.update({
+    where: {
+      id,
+    },
+    data: {
+      returnDate: addDays(new Date(), 7),
+    },
+  })
+
+  revalidatePath(`/dashboard/users/[id]/books`, 'page')
+
+  return res
+}
