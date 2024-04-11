@@ -31,3 +31,9 @@ export const upload = async (data: FormData) => {
 
   return { url: '/' + fileName }
 }
+
+export const deleteImage = async (
+  path: string
+): Promise<void | { error?: string }> => {
+  await unlink('public' + path)
+}
