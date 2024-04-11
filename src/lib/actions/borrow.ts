@@ -43,3 +43,24 @@ export async function addBorrow(userId: string, bookId: number) {
 
   return borrow
 }
+
+export async function deleteBorrow(id: number) {
+  const res = await prisma.borrow.delete({
+    where: {
+      id,
+    },
+  })
+
+  await prisma.book.update({
+    where: {
+      id: res.bookId,
+    },
+    data: {
+      status: 'available',
+    },
+  })
+
+  revalidatePath(`/dashboard/users/[id]/books`, 'page')
+
+  return res
+}
