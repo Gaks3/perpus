@@ -34,3 +34,18 @@ export async function deleteBookmark(userId: string, bookId: number) {
 
   revalidatePath(`/user/[id]/bookmark`, 'page')
 }
+
+export async function getBookmarkByUserId(userId: string) {
+  const user = await getUser()
+  if (!user || (user.user?.id !== userId && !user.user?.isAdmin))
+    throw new Error('Unauthorized')
+
+  return await prisma.bookmark.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      book: true,
+    },
+  })
+}
