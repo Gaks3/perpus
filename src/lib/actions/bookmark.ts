@@ -18,3 +18,19 @@ export async function createBookmark(userId: string, bookId: number) {
 
   revalidatePath(`/user/[id]/bookmark`, 'page')
 }
+
+export async function deleteBookmark(userId: string, bookId: number) {
+  const user = await getUser()
+  if (!user || !user.user?.isAdmin) throw new Error('Unauthorized')
+
+  await prisma.bookmark.delete({
+    where: {
+      bookId_userId: {
+        bookId,
+        userId,
+      },
+    },
+  })
+
+  revalidatePath(`/user/[id]/bookmark`, 'page')
+}
