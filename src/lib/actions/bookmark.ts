@@ -49,3 +49,18 @@ export async function getBookmarkByUserId(userId: string) {
     },
   })
 }
+
+export async function getBookmark(userId: string, bookId: number) {
+  const user = await getUser()
+  if (!user || (user.user?.id !== userId && !user))
+    throw new Error('Unauthorized')
+
+  return await prisma.bookmark.findUnique({
+    where: {
+      bookId_userId: {
+        bookId,
+        userId,
+      },
+    },
+  })
+}
