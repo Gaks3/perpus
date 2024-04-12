@@ -95,3 +95,7 @@ export async function getMostBorrowUser() {
     count: countBorrow,
   }))
 }
+
+export async function getUsersCount() {
+  return await prisma.user.count()
+}
