@@ -54,3 +54,25 @@ export async function getUserByEmail(email: string) {
     },
   })
 }
+
+export async function updateUser(id: string, data: UserUpdate) {
+  const user = await getUser()
+  if (!user || (user.user?.id !== id && !user.user?.isAdmin)) throw new Error()
+
+  if (data.password) {
+    const hash = await new Argon2id().hash(data.password)
+
+    data.password = hash
+  }
+
+  const res = await prisma.user.update({
+    where: {
+      id,
+    },
+    data,
+  })
+
+  revalidatePath('/dashboard/user')
+
+  return res
+}
