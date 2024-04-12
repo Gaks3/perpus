@@ -76,3 +76,22 @@ export async function updateUser(id: string, data: UserUpdate) {
 
   return res
 }
+
+export async function getMostBorrowUser() {
+  const user = await getUser()
+  if (!user || !user.user?.isAdmin) throw new Error('Unauthorized')
+
+  const data = await prisma.user.findMany({
+    orderBy: {
+      bookmarks: {
+        _count: 'desc',
+      },
+    },
+    take: 10,
+  })
+
+  return data.map(({ email, countBorrow }) => ({
+    email: email,
+    count: countBorrow,
+  }))
+}
