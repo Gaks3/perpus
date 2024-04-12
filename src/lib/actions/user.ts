@@ -35,3 +35,14 @@ export async function deleteUser(id: string) {
 
   return res
 }
+
+export async function getUserById(id: string) {
+  const user = await getUser()
+  if (!user || !user.user?.isAdmin) throw new Error('Unauthorized')
+
+  return await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  })
+}
